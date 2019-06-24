@@ -1,15 +1,21 @@
+
+//Model
 var budgetController = (function(){
 
-    var x = 23;
 
-    var add = function(a) {
-        return x + a;
-    }
+})();
 
-    return {
-        publicTest: function(b) {
-            console.log(add(b));   
-        }
-    }
+//View
+var UIController = (function(){
+
+    //Some code
+
+})();
+
+
+//Controller
+var appController = (function(){
+
+    //Some code
 
 })();
