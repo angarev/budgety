@@ -43,32 +43,39 @@ var appController = (function(budgetCtrl, UICtrlr){
     //3. Add the new item to UI
     //4. Calculate the budget
     //5. Display the budgte on UI
+   
+    
+    //Create function for event listeners if we need to add more
+    var setupEventListeners = function() {
+        
+        //Get dom strings from UI controller
+        var DOM = UICtrlr.getDOMstrings();
+    
+        // Add EventListener to add btn when user click with mouse
+        document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
 
-    //Get dom strings from UI controller
-    var DOM = UICtrlr.getDOMstrings();
+        // Add EventListener to add btn when user use return key
+        document.addEventListener('keypress', function(event){
+
+            //Use keyCode for new browsers and which for older
+            if(event.keyCode === 13 || event.which === 13) {
+                ctrlAddItem();
+            }
+
+        });
+    }
+
 
     var ctrlAddItem = function () {
         var input = UICtrlr.getInput();
-
-        console.log(input);
     }
     
-
-    // Add EventListener to add btn when user click with mouse
-    document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
-
-    // Add EventListener to add btn when user use return key
-    document.addEventListener('keypress', function(event){
-
-        //Use keyCode for new browsers and which for older
-        if(event.keyCode === 13 || event.which === 13) {
-            ctrlAddItem();
-        }
-
-    });
-
-    //Some code
-    // return {
-        
-    // }
+    
+    return {
+        init: function() {
+            setupEventListeners();
+        }  
+    };
 })(budgetController, UIController);
+
+appController.init();
