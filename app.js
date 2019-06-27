@@ -29,13 +29,13 @@ var budgetController = (function(){
     return {
         addItem: function (type, des, val ) {
             var newItem;
-
+                    
             //Create a new ID
-            if (data.allItems[type].lenght > 0) {
-                ID = data.allItems[type][data.allItems[type].lenght - 1].id + 1;
+            if (data.allItems[type].length > 0) {    
+                ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
             } else {
                 ID = 0;
-            }              
+            }
 
             //Create a new item based on inc or exp type 
             if(type === 'exp') {
@@ -141,6 +141,7 @@ var appController = (function(budgetCtrl, UICtrlr){
         //Get the field input data
         input = UICtrlr.getInput();
 
+        
         // Add the item to budget controller 
         newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
