@@ -92,10 +92,22 @@ var UIController = (function(){
         newHtml = newHtml.replace('%value%', obj.value);
 
         //Insert the HTML into the DOM
-        document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+        document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);          
+      },
+      clearFields: function () {
+          var fields, fieldsArr;
 
+          //Get NodeList with element 
+          fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+          //Convert NodeList to array           
+          fieldsArr = Array.prototype.slice.call(fields);
+          //Remove all values from fields
+          fieldsArr.forEach(function(current) {
+              current.value = "";
+          });
+          //Add focus to the first clear field
+          fieldsArr[0].focus();
 
-          
       },
       getDOMstrings: function () {
           return DOMstrings;
@@ -110,8 +122,9 @@ var appController = (function(budgetCtrl, UICtrlr){
     //1. Get the field input data
     //2. Add the item to budget controller
     //3. Add the new item to UI
-    //4. Calculate the budget
-    //5. Display the budgte on UI
+    //4. Clear the fields
+    //5. Calculate the budget
+    //6. Display the budgte on UI
    
     
     //Create function for event listeners if we need to add more
@@ -140,16 +153,15 @@ var appController = (function(budgetCtrl, UICtrlr){
 
         //Get the field input data
         input = UICtrlr.getInput();
-
         
         // Add the item to budget controller 
         newItem = budgetCtrl.addItem(input.type, input.description, input.value);
-
         UICtrlr.addListItem(newItem, input.type);
 
+        //Clear the fields
+        UIController.clearFields();
 
     }
-    
     
     return {
         init: function() {
