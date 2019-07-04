@@ -7,7 +7,23 @@ var budgetController = (function(){
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
     };
+
+
+    Expense.prototype.calcPercentage = function(totalIncome) {
+
+        if (totalIncome > 0) {
+            this.percentage = Math.round((this.value/totalIncome)*100);    
+        } else {
+            this.percentage = -1;
+        }
+        
+    };
+
+    Expense.prototype.getPercentage = function() {
+        return this.percentage;
+    }
     
     var Income = function (id, description, value) {
         this.id = id;
@@ -85,6 +101,20 @@ var budgetController = (function(){
                 data.percentage = -1;
             }
 
+        },
+        calculatePercentages: function () {
+            data.allItems.exp.forEach(function(current){
+                current.calcPercentage(data.totals.inc);
+            });
+        },
+        getPercentages: function () {
+
+            var allPerc = data.allItems.exp.map(function (current) {
+                return current.getPercentage();
+            });
+
+            return allPerc;
+            
         },
         getBudget: function(){
             return {
@@ -244,6 +274,20 @@ var appController = (function(budgetCtrl, UICtrlr){
     };
 
 
+    var updatePercentages = function () {
+
+        //Caclulate percentages
+        budgetCtrl.calculatePercentages();
+
+        //Read percentages from the budget controller
+        var percentages = budgetCtrl.getPercentages();
+
+        console.log(percentages); 
+
+        //Update the UI with the new percentages
+    };
+
+
     var ctrlAddItem = function () {
         var input, newItem;
 
@@ -261,13 +305,15 @@ var appController = (function(budgetCtrl, UICtrlr){
 
             //Calculate and update the budget
             updateBudget();
+
+            //Calculate and update the parsentages
+            updatePercentages();
             
         }
     };
 
     var ctrlDeleteItem = function (event) {
         var itemId, splitId, type, ID;
-        
         itemId= event.target.parentNode.id;
 
         if (itemId) {
@@ -283,6 +329,9 @@ var appController = (function(budgetCtrl, UICtrlr){
 
             //Update budget
             updateBudget();
+
+            //Calculate and update the parsentages
+            updatePercentages();
 
         }
        
