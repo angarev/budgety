@@ -146,7 +146,34 @@ var UIController = (function(){
         expensesLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
         container: '.container',
-        expensesPercentagesLabel: '.item__percentage'
+        expensesPercentagesLabel: '.item__percentage',
+        dateLabel: '.budget__title--month'
+    };
+
+
+    var formatNumber = function (num, type) {
+
+        var numSplit, int, dec, sing;
+
+        num = Math.abs(num).toFixed(2);
+        numSplit = num.split('.');
+
+        int = numSplit[0];
+        if(int.length > 3) {
+            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, int.length);
+        }
+        dec = numSplit[1];
+
+        type === 'exp' ? sing = "-" : sing = "+";
+        
+        if(num === "0.00") {
+            num = int + "." + dec;
+        } else {
+            num = sing + " " + int + "." + dec;
+        }
+        
+
+        return num
     };
 
     return {
@@ -174,7 +201,7 @@ var UIController = (function(){
         newHtml = html.replace('%id%', obj.id);
         newHtml = newHtml.replace('%ID%', obj.id);
         newHtml = newHtml.replace('%description%', obj.description);
-        newHtml = newHtml.replace('%value%', obj.value);
+        newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
         //Insert the HTML into the DOM
         document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);          
@@ -211,10 +238,19 @@ var UIController = (function(){
       },
 
       displayBudget: function(obj) {
-          document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
-          document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
-          document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
-          
+
+          var type;
+  
+          if (obj.budget > 0) {
+            type = 'inc';
+          } else if(obj.budget < 0) {
+            type = 'exp';
+          }
+       
+          document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+          document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc, "inc");
+          document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp, "exp");
+
           if (obj.percentage > 0) {
             document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';    
           } else {
@@ -235,8 +271,35 @@ var UIController = (function(){
                 current.textContent = percentages[index] + "---";
               }
           });
+      },
 
+      displayMounth: function () {
+        var now, year, month, monthNames; 
+        
+        monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+        ];
+       
+        now = new Date();
+        month = now.getMonth();
+        year = now.getFullYear();
 
+        document.querySelector(DOMstrings.dateLabel).textContent = monthNames[month] + ", " + year;
+      },
+      changeType: function() {
+          var fields = document.querySelectorAll(
+              DOMstrings.inputType + ',' +
+              DOMstrings.inputDescription + ',' +
+              DOMstrings.inputValue
+          )
+
+          var fieldsArr = Array.prototype.slice.call(fields);
+
+          fieldsArr.forEach(function(current) {
+              current.classList.toggle('red-focus');
+          });
+
+          document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
       },
       getDOMstrings: function () {
           return DOMstrings;
@@ -277,6 +340,7 @@ var appController = (function(budgetCtrl, UICtrlr){
 
         // Add EventListener to delete btn
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrlr.changeType);
 
     };
 
@@ -364,6 +428,7 @@ var appController = (function(budgetCtrl, UICtrlr){
                 percentage: -1
             });
             setupEventListeners();
+            UICtrlr.displayMounth();
         }  
     };
 })(budgetController, UIController);
